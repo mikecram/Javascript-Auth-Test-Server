@@ -9,6 +9,7 @@ const app = express();
 const middlewares = require('./auth/middlewares.js');
 
 const auth = require('./auth/index.js');
+const notes = require('./api/notes.js');
 
 app.use(morgan('dev'));
 app.use(cors({
@@ -25,6 +26,9 @@ app.get('/', (req, res) => {
 });
 
 app.use('/auth', auth);
+
+//making a request on /api/v1/notes uses the isLoggedIn middleware to check if logged in before going to notes
+app.use('/api/v1/notes', middlewares.isLoggedIn, notes);
 
 function notFound(req, res, next) {
   res.status(404);
