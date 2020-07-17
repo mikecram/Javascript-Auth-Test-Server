@@ -34,7 +34,9 @@ function createTokenSendResponse(user, res, next) {
     // Store user ID and username in var 'payload' to use to sign the token
     const payload = {
         _id: user._id,
-        username: user.username
+        username: user.username,
+        role: user.role,
+        active: user.active
     };
     /* Create a token with 'jwt' that expires in 1h
         - This pulls 'TOKEN_SECRET' from '.env' in 'server' folder
@@ -88,7 +90,9 @@ router.post('/signup', (req, res, next) => {
                     // Create var 'newUser'
                     const newUser = {
                         username: req.body.username,
-                        password: hashedPassword
+                        password: hashedPassword,
+                        role: 'user',
+                        active: true
                     };
                     // Insert the 'newUser' into DB 'users', with hashed password. 
                     users.insert(newUser)
@@ -113,6 +117,7 @@ function respondError422(res, next) {
     next(error);
 }
 
+
 /* NOTE: When a client posts or submits data to the server at 'www.example.com/auth/login':
     - If inputs are valid, use findOne to search database for that username to check if it exists 
     - Then, if the inputted 'username' exists:
@@ -127,8 +132,14 @@ router.post('/login', (req, res, next) => {
         users.findOne({
             username: req.body.username,
         }).then(user => {
-            // If user exists, use 'bcrypt' to compare inputted 'password' with stored hashed password
-            if (user) {
+            // If user active = false, then don't let them log in
+            if (!user.active) {
+                res.status(422);
+                const error = new Error('Server: User has been deactivated');
+                next(error);
+            }
+            // If user exists and isn't inactive, use 'bcrypt' to compare inputted 'password' with stored hashed password
+            if (user && user.active) {
                 // Say what's happening in server console
                 console.log('Comparing password: ', req.body.password, ' with the hash: ', user.password);
                 bcrypt.compare(req.body.password, user.password)

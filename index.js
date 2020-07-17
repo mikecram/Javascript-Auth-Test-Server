@@ -42,7 +42,7 @@ app.use('/auth', auth);
  - using the 'isLoggedIn' function in 'middlewares' to check if logged in before responding with 'notes' */
 app.use('/api/v1/notes', middlewares.isLoggedIn, notes);
 /* A request for 'https://www.example.com/api/v1/users' responds with 'users': */
-app.use('/api/v1/users', users);
+app.use('/api/v1/users', middlewares.isLoggedIn, middlewares.isAdmin, users);
 
 
 // Creates a function that can be used throughout the server to forward a 404 error to the error handler

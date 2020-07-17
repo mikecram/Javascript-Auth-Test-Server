@@ -56,8 +56,20 @@ function isLoggedIn(req,res,next) {
     }
 }
 
+function isAdmin(req, res, next) {
+    if (req.user.role === 'admin') {
+        next();
+    } else {
+        const error = new Error('❌ Un-Authorized ❌');
+        res.status(401);
+        next(error);
+    }
+}
+
+
 // Export these functions to be used by other server files
 module.exports = {
     checkTokenSetUser,
-    isLoggedIn
+    isLoggedIn,
+    isAdmin
 };
