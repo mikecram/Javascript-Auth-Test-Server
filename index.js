@@ -16,6 +16,7 @@ const middlewares = require('./auth/middlewares.js');
 const auth = require('./auth/index.js');
 const notes = require('./api/notes.js');
 const users = require('./api/users.js');
+const expenses = require('./api/expenses.js');
 
 // Morgan is a HTTP request logger middleware; it logs helpful things in the console
 app.use(morgan('dev'));
@@ -43,6 +44,9 @@ app.use('/auth', auth);
 app.use('/api/v1/notes', middlewares.isLoggedIn, notes);
 /* A request for 'https://www.example.com/api/v1/users' responds with 'users': */
 app.use('/api/v1/users', middlewares.isLoggedIn, middlewares.isAdmin, users);
+//
+app.use('/api/v1/expenses', middlewares.isLoggedIn, expenses);
+
 
 
 // Creates a function that can be used throughout the server to forward a 404 error to the error handler
